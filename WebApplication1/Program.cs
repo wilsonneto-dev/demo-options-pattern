@@ -7,4 +7,7 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 
+app.MapGet("/", (IConfiguration configuration) =>
+    Results.Ok(configuration.GetValue<string>("Providers:OpenAI:ApiSecret")));
+
 app.Run();
