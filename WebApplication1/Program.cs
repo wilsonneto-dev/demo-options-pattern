@@ -8,6 +8,6 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 app.MapGet("/", (IConfiguration configuration) =>
-    Results.Ok(configuration.GetValue<string>("Providers:OpenAI:ApiSecret")));
+    Results.Ok(configuration.GetValue<string>("Providers:OpenAI:ApiKey")));
 
 app.Run();
