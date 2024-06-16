@@ -1,7 +1,12 @@
+using Microsoft.Extensions.Options;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.Configure<OpenAiSettings>(
+    builder.Configuration.GetSection("Providers:OpenAI"));
 
 builder.Services.AddTransient<OpenAiGateway>();
 
@@ -19,13 +24,23 @@ app.Run();
 
 
 public record EndpointInput(string Prompt);
-public record EndpointOutput(string Response); 
+public record EndpointOutput(string Response);
 
 
-public class OpenAiGateway
+internal class OpenAiGateway(IOptions<OpenAiSettings> openAiSettings)
 {
-    public Task<string> ExecutePrompt(string prompt)
-    {
-        return Task.FromResult("not implemented");
-    }
+    private readonly string _baseAddress = openAiSettings.Value.BaseAddress
+        ?? throw new ArgumentException("Base Address not found...");
+
+    private readonly string _apiKey = openAiSettings.Value.ApiKey
+        ?? throw new ArgumentException("Api key not found...");
+    
+    public Task<string> ExecutePrompt(string prompt) => 
+        Task.FromResult($"BaseAddress: {_baseAddress} / Api Key: {_apiKey}");
+}
+
+public class OpenAiSettings
+{
+    public string? BaseAddress { get; set; }
+    public string? ApiKey { get; set; }
 }
